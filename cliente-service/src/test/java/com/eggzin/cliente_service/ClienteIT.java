@@ -12,7 +12,6 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@Sql(scripts = "/sql/test-delete.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 public class ClienteIT {
 
     @Autowired
@@ -79,7 +78,7 @@ public class ClienteIT {
     public void findByID_ClienteNaoRelacionadoAoUsuario_Retornar403() {
         var response = testClient
                 .get()
-                .uri("/cliente-service/clientes/10") // ID de cliente existente
+                .uri("/cliente-service/clientes/20") // ID de cliente existente
                 .headers(JwtAuthentication.getHeaderAuthorization(testClient, "pedro@email.com", "123456"))
                 .exchange();
 
@@ -130,7 +129,7 @@ public class ClienteIT {
         ClienteEditDto editDto = new ClienteEditDto("Novo Nome", "11999999999");
         var response = testClient
                 .patch()
-                .uri("/cliente-service/clientes/10") // ID de cliente existente
+                .uri("/cliente-service/clientes/20") // ID de cliente existente
                 .headers(JwtAuthentication.getHeaderAuthorization(testClient, "pedro@email.com", "123456"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(editDto)
@@ -165,8 +164,8 @@ public class ClienteIT {
         ClienteEditDto editDto = new ClienteEditDto("", ""); // Dados inválidos
         ErrorMessage responseBody = testClient
                 .patch()
-                .uri("/cliente-service/clientes/10")
-                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "ana@email.com", "123456"))
+                .uri("/cliente-service/clientes/20")
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "joao@email.com", "123456"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(editDto)
                 .exchange()
@@ -208,7 +207,7 @@ public class ClienteIT {
     public void delete_ClienteNaoRelacionadoAoUsuario_Retornar403() {
         var response = testClient
                 .delete()
-                .uri("/cliente-service/clientes/10") // ID de cliente existente
+                .uri("/cliente-service/clientes/20") // ID de cliente existente
                 .headers(JwtAuthentication.getHeaderAuthorization(testClient, "pedro@email.com", "123456"))
                 .exchange();
 

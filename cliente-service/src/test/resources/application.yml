@@ -8,5 +8,8 @@ spring:
     properties:
       hibernate:
         format_sql: false
+
     show-sql: true
     defer-datasource-initialization: true
+    hibernate:
+      ddl-auto: create-drop

@@ -20,8 +20,6 @@ public class UsuarioIT {
     WebTestClient testClient;
 
     @Test
-    @Sql(scripts = "/sql/test-insert.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(scripts = "/sql/test-delete.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     public void createUsuario_ComUsernameEPasswordValidos_RetornarUsuarioCriadoComStatus201() {
         UsuarioResponseDto responseBody = testClient
                 .post()
@@ -39,8 +37,7 @@ public class UsuarioIT {
     }
 
     @Test
-    @Sql(scripts = "/sql/test-insert.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(scripts = "/sql/test-delete.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    
     public void createUsuario_ComUsernameInvalido_RetornarErrorMessageStatus422() {
         ErrorMessage responseBody = testClient
                 .post()
@@ -83,8 +80,7 @@ public class UsuarioIT {
     }
 
     @Test
-    @Sql(scripts = "/sql/test-insert.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(scripts = "/sql/test-delete.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    
     public void createUsuario_ComPasswordInvalido_RetornarErrorMessageStatus422() {
         ErrorMessage responseBody = testClient
                 .post()
@@ -101,8 +97,7 @@ public class UsuarioIT {
     }
 
     @Test
-    @Sql(scripts = "/sql/test-insert.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(scripts = "/sql/test-delete.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    
     public void createUsuario_ComUsernameRepetido_RetornarErrorMessageComStatus409() {
         ErrorMessage responseBody = testClient
                 .post()
@@ -119,8 +114,7 @@ public class UsuarioIT {
     }
 
     @Test
-    @Sql(scripts = "/sql/test-insert.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(scripts = "/sql/test-delete.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    
     public void buscarUsuario_ComIdExistente_RetornarUsuarioComStatus200() {
         UsuarioResponseDto responseBody = testClient
                 .get()
@@ -163,8 +157,7 @@ public class UsuarioIT {
     }
 
     @Test
-    @Sql(scripts = "/sql/test-insert.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(scripts = "/sql/test-delete.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    
     public void buscarUsuario_ComOutroUsuario_RetornarErrorMessageComStatus403() {
         var response = testClient
                 .get()
@@ -178,8 +171,7 @@ public class UsuarioIT {
     }
 
     @Test
-    @Sql(scripts = "/sql/test-insert.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(scripts = "/sql/test-delete.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    
     public void editarSenha_ComDadosValidos_RetornarStatus204() {
         testClient
                 .patch()
@@ -201,8 +193,6 @@ public class UsuarioIT {
     }
 
     @Test
-    @Sql(scripts = "/sql/test-insert.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(scripts = "/sql/test-delete.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     public void editarSenha_ComUsuariosDiferentes_RetornarErrorMessageComStatus403() {
         var response = testClient
                 .patch()
@@ -218,7 +208,6 @@ public class UsuarioIT {
     }
 
     @Test
-    @Sql(scripts = "/sql/test-delete.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     public void editarSenha_ComCamposInvalidos_RetornarErrorMessageComStatus422() {
         ErrorMessage responseBody = testClient
                 .patch()
