@@ -1,0 +1,35 @@
+package com.eggzin.cliente_service.config;
+
+import org.springframework.context.annotation.Bean;
+
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.info.Info;
+import io.swagger.v3.oas.models.Components;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.License;
+
+@OpenAPIDefinition(
+	info = @Info(
+			title = "Cliente-Service",
+			version = "v1",
+			description = "Documentação do serviço/API de Clientes do Banco Javer"
+	)
+)
+public class OpenApiConfiguration {
+	
+	@Bean
+	public OpenAPI customOpenAI() {
+		
+		return new OpenAPI()
+				.components(new Components())
+				.info(
+						new io.swagger.v3.oas.models.info.Info()
+						.title("Cliente-Service")
+						.version("v1")
+						.license(new License()
+								.name("Apache 2.0")
+								.url("http://springdoc.org"))
+						);
+	}
+
+}

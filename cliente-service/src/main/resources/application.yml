@@ -1,0 +1,44 @@
+server:
+  port: 8000
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+  
+spring:
+  application:
+    name: cliente-service
+
+  web:
+    locale-resolver: fixed
+    locale: pt_BR
+
+##MYSQL Database Connection Properties
+#  datasource:
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+#    url: jdbc:mysql://localhost:3306/javer?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=America/Sao_Paulo
+#    username: root
+#    password: AY3@3oiy9fpdzbs
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+#JPA
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+      format_sql: false
+    hibernate:
+      ddl-auto: create-drop
+    defer-datasource-initialization: true
+
+#springdoc:
+#  swagger-ui:
+#    path: /docs-cliente-service.html
+#  api-docs:
+#    path: /docs-cliente-service
+#  packagesToScan: com.eggzin.cliente_service.web.controller
