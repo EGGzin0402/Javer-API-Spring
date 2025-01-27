@@ -36,40 +36,45 @@ public class FeignErrorDecoder implements ErrorDecoder {
 			JsonNode jsonNode = objectMapper.readTree(responseBody);
 			
 			String message = jsonNode.has("message") ? jsonNode.get("message").asText() : "Unknown error";
-			
-			if (response.status() == 400) {
-				return new PasswordInvalidException(message);
-			}
-			if (response.status() == 404) {
-				return new EntityNotFoundException(message);
-			}
-			if (response.status() == 409) {
-				return new UsernameUniqueViolationException(message);
-			}
-            if (response.status() == 403) {
-                return new ForbiddenException(message);
-            }
-			if (response.status() == 422) {
-				
-				List<FieldError> fieldErrors = new ArrayList<>();
-                if (jsonNode.has("errors")) {
-                    JsonNode errorsNode = jsonNode.get("errors");
-                    
-                    for (JsonNode errorNode : errorsNode) {
-                        String field = errorNode.has("field") ? errorNode.get("field").asText() : "Unknown field";
-                        String errorMessage = errorNode.has("message") ? errorNode.get("message").asText() : "Unknown error";
-                        fieldErrors.add(new FieldError("object", field, errorMessage));
+
+            switch (response.status()) {
+                case 400 -> {
+                    return new PasswordInvalidException(message);
+                }
+                case 401 -> {
+                    return new UnauthorizedException(message);
+                }
+                case 403 -> {
+                    return new ForbiddenException(message);
+                }
+                case 404 -> {
+                    return new EntityNotFoundException(message);
+                }
+                case 409 -> {
+                    return new UsernameUniqueViolationException(message);
+                }
+                case 422 -> {
+
+                    List<FieldError> fieldErrors = new ArrayList<>();
+                    if (jsonNode.has("errors")) {
+                        JsonNode errorsNode = jsonNode.get("errors");
+
+                        for (JsonNode errorNode : errorsNode) {
+                            String field = errorNode.has("field") ? errorNode.get("field").asText() : "Unknown field";
+                            String errorMessage = errorNode.has("message") ? errorNode.get("message").asText() : "Unknown error";
+                            fieldErrors.add(new FieldError("object", field, errorMessage));
+                        }
                     }
+
+                    BindingResult bindingResult = new BindException(new Object(), "object");
+                    for (FieldError fieldError : fieldErrors) {
+                        bindingResult.addError(fieldError);
+                    }
+
+                    return new ArgumentosInvalidosException(bindingResult);
                 }
-                
-                BindingResult bindingResult = new BindException(new Object(), "object");
-                for (FieldError fieldError : fieldErrors) {
-                    bindingResult.addError(fieldError);
-                }
-                
-                return new ArgumentosInvalidosException(bindingResult);
-			}
-			return new RuntimeException(response.reason());
+            }
+            return new RuntimeException(response.reason());
 		} catch (IOException e) {
 			 return new Exception("Erro ao ler o corpo da resposta: " + e.getMessage());
 		}

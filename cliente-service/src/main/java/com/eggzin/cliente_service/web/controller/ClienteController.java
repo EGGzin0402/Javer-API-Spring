@@ -1,5 +1,10 @@
 package com.eggzin.cliente_service.web.controller;
 
+import com.eggzin.cliente_service.web.exception.ErrorMessage;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
@@ -29,7 +34,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
-@Tag(name = "Ciente Controller", description = "Contém os endoints para as operações com ciente no Banco de Dados")
+@Tag(name = "Ciente Controller", description = "Contém os endpoints para as operações com clientes no Banco de Dados")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("cliente-service/clientes")
@@ -40,8 +45,22 @@ public class ClienteController {
 	
 	@Autowired
 	private Environment environment;
-	
-	@Operation(summary = "TESTE")
+
+	@Operation(
+			summary = "Criação de cliente",
+			security = @SecurityRequirement(name = "security"),
+			description = "Endpoint para criar um novo cliente com base nos dados fornecidos.",
+			responses = {
+					@ApiResponse(responseCode = "201", description = "Cliente criado com sucesso",
+							content = @Content(mediaType = "application/json", schema = @Schema(implementation = ClienteResponseDto.class))),
+					@ApiResponse(responseCode = "401", description = "Usuário não autenticado",
+							content = @Content(mediaType = "application/json")),
+					@ApiResponse(responseCode = "409", description = "Cliente já cadastrado",
+							content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
+					@ApiResponse(responseCode = "422", description = "Dados de entrada inválidos",
+							content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
+			}
+	)
 	@PostMapping
 	public ResponseEntity<ClienteResponseDto> create(@RequestBody @Valid ClienteCreateDto dto,
 													@AuthenticationPrincipal JwtUserDetails userDetails){
@@ -57,7 +76,20 @@ public class ClienteController {
 		
 		return ResponseEntity.status(HttpStatus.CREATED).body(resDto);
 	}
-	
+
+	@Operation(
+			summary = "Consultar cliente por ID",
+			security = @SecurityRequirement(name = "security"),
+			description = "Busca os detalhes de um cliente específico pelo ID.",
+			responses = {
+					@ApiResponse(responseCode = "200", description = "Cliente encontrado",
+							content = @Content(mediaType = "application/json", schema = @Schema(implementation = ClienteResponseDto.class))),
+					@ApiResponse(responseCode = "401", description = "Usuário não autenticado",
+							content = @Content(mediaType = "application/json")),
+					@ApiResponse(responseCode = "403", description = "Sem permissão para buscar os dados do cliente",
+							content = @Content(mediaType = "application/json")),
+			}
+	)
 	@GetMapping("/{id}")
 	public ResponseEntity<ClienteResponseDto> getById(@PathVariable Long id,
 													@AuthenticationPrincipal JwtUserDetails userDetails){
@@ -72,7 +104,22 @@ public class ClienteController {
 		resDto.setPort(port);
 		return ResponseEntity.ok(resDto);
 	}
-	
+
+	@Operation(
+			summary = "Atualizar cliente",
+			security = @SecurityRequirement(name = "security"),
+			description = "Atualiza os dados de um cliente existente.",
+			responses = {
+					@ApiResponse(responseCode = "200", description = "Cliente atualizado com sucesso",
+							content = @Content(mediaType = "application/json", schema = @Schema(implementation = ClienteResponseDto.class))),
+					@ApiResponse(responseCode = "401", description = "Usuário não autenticado",
+							content = @Content(mediaType = "application/json")),
+					@ApiResponse(responseCode = "403", description = "Sem permissão para alterar os dados do cliente",
+							content = @Content(mediaType = "application/json")),
+					@ApiResponse(responseCode = "422", description = "Dados de entrada inválidos",
+							content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
+			}
+	)
 	@PatchMapping("/{id}")
 	public ResponseEntity<ClienteResponseDto> edit(@PathVariable Long id, @RequestBody @Valid ClienteEditDto dto,
 												@AuthenticationPrincipal JwtUserDetails userDetails){
@@ -94,7 +141,19 @@ public class ClienteController {
 		
 		return ResponseEntity.ok(resDto);
 	}
-	
+
+	@Operation(
+			summary = "Excluir cliente",
+			security = @SecurityRequirement(name = "security"),
+			description = "Remove um cliente do sistema pelo ID.",
+			responses = {
+					@ApiResponse(responseCode = "204", description = "Cliente removido com sucesso"),
+					@ApiResponse(responseCode = "401", description = "Usuário não autenticado",
+							content = @Content(mediaType = "application/json")),
+					@ApiResponse(responseCode = "403", description = "Sem permissão para excluir o cliente",
+							content = @Content(mediaType = "application/json")),
+			}
+	)
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> delete(@PathVariable Long id, @AuthenticationPrincipal JwtUserDetails userDetails){
 		

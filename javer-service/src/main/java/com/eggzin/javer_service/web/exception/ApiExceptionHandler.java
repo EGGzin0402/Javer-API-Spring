@@ -76,4 +76,13 @@ public class ApiExceptionHandler {
 				.build();
 	}
 
+	@ExceptionHandler(UnauthorizedException.class)
+	public ResponseEntity<Void> unauthorizedException(RuntimeException ex,
+												   HttpServletRequest request){
+		log.error("CLIENTE-SERVICE Error - ", ex);
+		return ResponseEntity
+				.status(HttpStatus.UNAUTHORIZED)
+				.build();
+	}
+
 }

@@ -1,5 +1,11 @@
 package com.eggzin.javer_service.web.controller;
 
+import com.eggzin.javer_service.web.exception.ErrorMessage;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.ResponseEntity;
@@ -38,11 +44,24 @@ public class JaverController {
 	
 	@Autowired
 	private Environment environment;
-	
-	
-	@Operation(summary = "Mandar uma requisição ao serviço de Clientes para criar um cliente")
+
+	@Operation(
+			summary = "Criação de cliente",
+			security = @SecurityRequirement(name = "security"),
+			description = "Endpoint para criar um novo cliente com base nos dados fornecidos.",
+			responses = {
+					@ApiResponse(responseCode = "201", description = "Cliente criado com sucesso",
+							content = @Content(mediaType = "application/json", schema = @Schema(implementation = ClienteResponseDto.class))),
+					@ApiResponse(responseCode = "401", description = "Usuário não autenticado",
+							content = @Content(mediaType = "application/json")),
+					@ApiResponse(responseCode = "409", description = "Cliente já cadastrado",
+							content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
+					@ApiResponse(responseCode = "422", description = "Dados de entrada inválidos",
+							content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
+			}
+	)
 	@PostMapping
-	public ResponseEntity<ClienteResponseDto> create(@RequestHeader("Authorization") String token, @Valid @RequestBody ClienteCreateDto dto){
+	public ResponseEntity<ClienteResponseDto> create(@Parameter(hidden = true) @RequestHeader(value = "Authorization", required = false) String token, @Valid @RequestBody ClienteCreateDto dto){
 		
 		return proxy.create(token, dto);
 		
@@ -54,9 +73,22 @@ public class JaverController {
 		 * HttpMethod.POST, entityReq, ClienteResponseDto.class);
 		 */
 	}
-	
+
+	@Operation(
+			summary = "Consultar cliente por ID",
+			security = @SecurityRequirement(name = "security"),
+			description = "Busca os detalhes de um cliente específico pelo ID.",
+			responses = {
+					@ApiResponse(responseCode = "200", description = "Cliente encontrado",
+							content = @Content(mediaType = "application/json", schema = @Schema(implementation = ClienteResponseDto.class))),
+					@ApiResponse(responseCode = "401", description = "Usuário não autenticado",
+							content = @Content(mediaType = "application/json")),
+					@ApiResponse(responseCode = "403", description = "Sem permissão para buscar os dados do cliente",
+							content = @Content(mediaType = "application/json")),
+			}
+	)
 	@GetMapping("/{id}")
-	public ResponseEntity<ClienteResponseDto> getById(@RequestHeader("Authorization") String token, @PathVariable Long id){
+	public ResponseEntity<ClienteResponseDto> getById(@Parameter(hidden = true) @RequestHeader(value = "Authorization", required = false) String token, @PathVariable Long id){
 		
 		return proxy.getById(token, id);
 		
@@ -72,9 +104,24 @@ public class JaverController {
 		 */
 	
 	}
-	
+
+	@Operation(
+			summary = "Atualizar cliente",
+			security = @SecurityRequirement(name = "security"),
+			description = "Atualiza os dados de um cliente existente.",
+			responses = {
+					@ApiResponse(responseCode = "200", description = "Cliente atualizado com sucesso",
+							content = @Content(mediaType = "application/json", schema = @Schema(implementation = ClienteResponseDto.class))),
+					@ApiResponse(responseCode = "401", description = "Usuário não autenticado",
+							content = @Content(mediaType = "application/json")),
+					@ApiResponse(responseCode = "403", description = "Sem permissão para alterar os dados do cliente",
+							content = @Content(mediaType = "application/json")),
+					@ApiResponse(responseCode = "422", description = "Dados de entrada inválidos",
+							content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
+			}
+	)
 	@PatchMapping("/{id}")
-	public ResponseEntity<ClienteResponseDto> edit(@RequestHeader("Authorization") String token, @PathVariable Long id, @Valid @RequestBody ClienteEditDto dto){
+	public ResponseEntity<ClienteResponseDto> edit(@Parameter(hidden = true) @RequestHeader(value = "Authorization", required = false) String token, @PathVariable Long id, @Valid @RequestBody ClienteEditDto dto){
 		
 		return proxy.edit(token, id, dto);
 		
@@ -92,9 +139,21 @@ public class JaverController {
 		 */
 		
 	}
-	
+
+	@Operation(
+			summary = "Excluir cliente",
+			security = @SecurityRequirement(name = "security"),
+			description = "Remove um cliente do sistema pelo ID.",
+			responses = {
+					@ApiResponse(responseCode = "204", description = "Cliente removido com sucesso"),
+					@ApiResponse(responseCode = "401", description = "Usuário não autenticado",
+							content = @Content(mediaType = "application/json")),
+					@ApiResponse(responseCode = "403", description = "Sem permissão para excluir o cliente",
+							content = @Content(mediaType = "application/json")),
+			}
+	)
 	@DeleteMapping("/{id}")
-	public ResponseEntity<Void> delete(@RequestHeader("Authorization") String token, @PathVariable Long id){
+	public ResponseEntity<Void> delete(@Parameter(hidden = true) @RequestHeader(value = "Authorization", required = false) String token, @PathVariable Long id){
 		return proxy.delete(token, id);
 		
 		/*
@@ -110,9 +169,22 @@ public class JaverController {
 		 * return ResponseEntity.noContent().build();
 		 */
 	}
-	
+
+	@Operation(
+			summary = "Calcular score do cliente",
+			security = @SecurityRequirement(name = "security"),
+			description = "Calcula o score de crédito de um cliente com base no saldo disponível.",
+			responses = {
+					@ApiResponse(responseCode = "200", description = "Score calculado com sucesso",
+							content = @Content(mediaType = "application/json", schema = @Schema(implementation = ScoreResponseDto.class))),
+					@ApiResponse(responseCode = "401", description = "Usuário não autenticado",
+							content = @Content(mediaType = "application/json")),
+					@ApiResponse(responseCode = "403", description = "Sem permissão para ver os dados do cliente",
+							content = @Content(mediaType = "application/json")),
+			}
+	)
 	@GetMapping("/{id}/score")
-	public ResponseEntity<ScoreResponseDto> calcularScore(@RequestHeader("Authorization") String token, @PathVariable Long id){
+	public ResponseEntity<ScoreResponseDto> calcularScore(@Parameter(hidden = true) @RequestHeader(value = "Authorization", required = false) String token, @PathVariable Long id){
 		
 		ClienteResponseDto cliResDto = proxy.getById(token, id).getBody();
 		Cliente cliente = ClienteMapper.toCliente(cliResDto);

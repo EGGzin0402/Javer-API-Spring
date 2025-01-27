@@ -83,6 +83,9 @@ public class JwtUtils {
     }
 
     private static String refactorToken(String token) {
+        if (token == null || token.isEmpty()) {
+            throw new JwtException("Token não pode ser nulo ou vazio.");
+        }
         if (token.contains(JWT_BEARER)) {
             return token.substring(JWT_BEARER.length());
         }

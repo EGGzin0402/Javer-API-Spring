@@ -24,9 +24,9 @@ public interface UsuarioProxy {
 	public ResponseEntity<UsuarioResponseDto> create(@RequestBody UsuarioCreateDto dto);
 	
 	@GetMapping("/{id}")
-	public ResponseEntity<UsuarioResponseDto> getById(@RequestHeader("Authorization") String token, @PathVariable Long id);
+	public ResponseEntity<UsuarioResponseDto> getById(@RequestHeader(value = "Authorization", required = false) String token, @PathVariable Long id);
 	
 	@PatchMapping("/{id}")
-	public ResponseEntity<Void> editPassword(@RequestHeader("Authorization") String token, @PathVariable Long id, @Valid @RequestBody PasswordEditDto dto);
+	public ResponseEntity<Void> editPassword(@RequestHeader(value = "Authorization", required = false) String token, @PathVariable Long id, @Valid @RequestBody PasswordEditDto dto);
 	
 }

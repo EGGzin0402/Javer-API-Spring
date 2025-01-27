@@ -21,15 +21,15 @@ import jakarta.validation.Valid;
 public interface ClienteProxy {
 	
 	@PostMapping
-	public ResponseEntity<ClienteResponseDto> create(@RequestHeader("Authorization") String token, @RequestBody @Valid ClienteCreateDto dto);
+	public ResponseEntity<ClienteResponseDto> create(@RequestHeader(value = "Authorization", required = false) String token, @RequestBody @Valid ClienteCreateDto dto);
 	
 	@GetMapping("/{id}")
-	public ResponseEntity<ClienteResponseDto> getById(@RequestHeader("Authorization") String token, @PathVariable Long id);
+	public ResponseEntity<ClienteResponseDto> getById(@RequestHeader(value = "Authorization", required = false) String token, @PathVariable Long id);
 	
 	@PatchMapping("/{id}")
-	public ResponseEntity<ClienteResponseDto> edit(@RequestHeader("Authorization") String token, @PathVariable Long id, @RequestBody @Valid ClienteEditDto dto);
+	public ResponseEntity<ClienteResponseDto> edit(@RequestHeader(value = "Authorization", required = false) String token, @PathVariable Long id, @RequestBody @Valid ClienteEditDto dto);
 	
 	@DeleteMapping("/{id}")
-	public ResponseEntity<Void> delete(@RequestHeader("Authorization") String token, @PathVariable Long id);
+	public ResponseEntity<Void> delete(@RequestHeader(value = "Authorization", required = false) String token, @PathVariable Long id);
 
 }

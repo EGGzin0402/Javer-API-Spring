@@ -1,5 +1,6 @@
 package com.eggzin.cliente_service.config;
 
+import com.eggzin.cliente_service.jwt.JwtAuthenticationEntryPoint;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -22,13 +23,13 @@ import com.eggzin.cliente_service.jwt.JwtAuthorizationFilter;
 public class SpringSecurityConfig {
 	
 	private static final String[] DOCUMENTATION_OPENAPI = {
-	        "/docs/index.html",
-	        "/docs-cliente-service.html",
-	        "/docs-cliente-service/**",
+	        "/cliente-service/docs/index.html",
+	        "/cliente-service/docs.html",
+	        "/cliente-service/docs/**",
 	        "/v3/api-docs/**",
-	        "/swagger-ui-custom.html",
-	        "/swagger-ui.html",
-	        "/swagger-ui/**",
+	        "/cliente-service/swagger-ui-custom.html",
+	        "/cliente-service/swagger-ui.html",
+	        "/cliente-service/swagger-ui/**",
 	        "/**.html",
 	        "/webjars/**",
 	        "/configuration/**",
@@ -50,6 +51,8 @@ public class SpringSecurityConfig {
 						session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 				).addFilterBefore(
 						jwtAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class
+				).exceptionHandling(ex -> ex
+						.authenticationEntryPoint(new JwtAuthenticationEntryPoint())
 				)
 				.build();
 	}

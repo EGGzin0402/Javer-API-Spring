@@ -36,9 +36,9 @@ spring:
       ddl-auto: create-drop
     defer-datasource-initialization: true
 
-#springdoc:
-#  swagger-ui:
-#    path: /docs-cliente-service.html
-#  api-docs:
-#    path: /docs-cliente-service
-#  packagesToScan: com.eggzin.cliente_service.web.controller
+springdoc:
+  swagger-ui:
+    path: /cliente-service/docs.html
+  api-docs:
+    path: /cliente-service/docs
+  packagesToScan: com.eggzin.cliente_service.web.controller

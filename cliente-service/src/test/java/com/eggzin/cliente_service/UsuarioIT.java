@@ -7,6 +7,7 @@ import com.eggzin.cliente_service.web.exception.ErrorMessage;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
@@ -37,7 +38,6 @@ public class UsuarioIT {
     }
 
     @Test
-    
     public void createUsuario_ComUsernameInvalido_RetornarErrorMessageStatus422() {
         ErrorMessage responseBody = testClient
                 .post()
@@ -80,7 +80,6 @@ public class UsuarioIT {
     }
 
     @Test
-    
     public void createUsuario_ComPasswordInvalido_RetornarErrorMessageStatus422() {
         ErrorMessage responseBody = testClient
                 .post()
@@ -97,7 +96,6 @@ public class UsuarioIT {
     }
 
     @Test
-    
     public void createUsuario_ComUsernameRepetido_RetornarErrorMessageComStatus409() {
         ErrorMessage responseBody = testClient
                 .post()
@@ -114,7 +112,6 @@ public class UsuarioIT {
     }
 
     @Test
-    
     public void buscarUsuario_ComIdExistente_RetornarUsuarioComStatus200() {
         UsuarioResponseDto responseBody = testClient
                 .get()
@@ -157,7 +154,28 @@ public class UsuarioIT {
     }
 
     @Test
-    
+    public void buscarUsuario_SemAutenticacao_RetornarErrorMessageComStatus401() {
+        var response = testClient
+                .get()
+                .uri("/cliente-service/usuarios/100")
+                .headers(httpHeaders -> httpHeaders.add(HttpHeaders.AUTHORIZATION, null))
+                .exchange();
+
+        response.expectStatus().isEqualTo(401);
+        org.assertj.core.api.Assertions.assertThat(response.expectBody().returnResult().getResponseBody()).isNull();
+
+        response = testClient
+                .get()
+                .uri("/cliente-service/usuarios/100")
+                .headers(httpHeaders -> httpHeaders.add(HttpHeaders.AUTHORIZATION, ""))
+                .exchange();
+
+        response.expectStatus().isEqualTo(401);
+        org.assertj.core.api.Assertions.assertThat(response.expectBody().returnResult().getResponseBody()).isNull();
+
+    }
+
+    @Test
     public void buscarUsuario_ComOutroUsuario_RetornarErrorMessageComStatus403() {
         var response = testClient
                 .get()
@@ -171,7 +189,6 @@ public class UsuarioIT {
     }
 
     @Test
-    
     public void editarSenha_ComDadosValidos_RetornarStatus204() {
         testClient
                 .patch()
@@ -190,6 +207,33 @@ public class UsuarioIT {
                 .bodyValue(new PasswordEditDto("123456", "123456", "123456"))
                 .exchange()
                 .expectStatus().isNoContent();
+    }
+
+    @Test
+    public void editarSenha_SemAutenticacao_RetornarErrorMessageComStatus401() {
+        var response = testClient
+                .patch()
+                .uri("/cliente-service/usuarios/102")
+                .headers(httpHeaders -> httpHeaders.add(HttpHeaders.AUTHORIZATION, null))
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(new PasswordEditDto("123456", "123456", "123456"))
+                .exchange();
+
+        response.expectStatus().isUnauthorized();
+
+        org.assertj.core.api.Assertions.assertThat(response.expectBody().returnResult().getResponseBody()).isNull();
+
+        response = testClient
+                .patch()
+                .uri("/cliente-service/usuarios/102")
+                .headers(httpHeaders -> httpHeaders.add(HttpHeaders.AUTHORIZATION, ""))
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(new PasswordEditDto("123456", "123456", "123456"))
+                .exchange();
+
+        response.expectStatus().isUnauthorized();
+
+        org.assertj.core.api.Assertions.assertThat(response.expectBody().returnResult().getResponseBody()).isNull();
     }
 
     @Test

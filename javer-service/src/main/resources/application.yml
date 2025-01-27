@@ -19,9 +19,9 @@ feign:
   httpclient:
     hc5:
       enabled: true
-#springdoc:
-#  swagger-ui:
-#    path: /docs-javer-service.html
-#  api-docs:
-#    path: /docs-javer-service
-#  packagesToScan: com.eggzin.javer_service.web.controller
+springdoc:
+  swagger-ui:
+    path: /javer-service/docs.html
+  api-docs:
+    path: /javer-service/docs
+  packagesToScan: com.eggzin.javer_service.web.controller

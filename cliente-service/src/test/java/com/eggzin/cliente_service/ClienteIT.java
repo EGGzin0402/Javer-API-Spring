@@ -7,6 +7,7 @@ import com.eggzin.cliente_service.web.exception.ErrorMessage;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.reactive.server.WebTestClient;
@@ -36,6 +37,38 @@ public class ClienteIT {
         org.assertj.core.api.Assertions.assertThat(responseBody.getNome()).isEqualTo("Pedro Barbosa");
         org.assertj.core.api.Assertions.assertThat(responseBody.getTelefone()).isEqualTo(11944643410L);
         org.assertj.core.api.Assertions.assertThat(responseBody.isCorrentista()).isEqualTo(true);
+    }
+
+    @Test
+    public void createCliente_SemAutenticacao_Retornar401() {
+        var responseBody = testClient
+                .post()
+                .uri("/cliente-service/clientes")
+                .headers(httpHeaders -> httpHeaders.add(HttpHeaders.AUTHORIZATION, null))
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(new ClienteCreateDto("", "", false)) // Dados inválidos
+                .exchange();
+
+        responseBody.expectStatus().isUnauthorized();
+
+        org.assertj.core.api.Assertions.assertThat(responseBody.expectBody().returnResult().getResponseBody()).isNull();
+    }
+
+    @Test
+    public void createCliente_ClienteJaExistente_Retornar409() {
+        ErrorMessage responseBody = testClient
+                .post()
+                .uri("/cliente-service/clientes")
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient,"ana@email.com", "123456"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(new ClienteCreateDto("Ana Silva", "11944643410", true)) // Dados inválidos
+                .exchange()
+                .expectStatus().isEqualTo(409)
+                .expectBody(ErrorMessage.class)
+                .returnResult().getResponseBody();
+
+        org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
+        org.assertj.core.api.Assertions.assertThat(responseBody.getStatus()).isEqualTo(409);
     }
 
     @Test
@@ -72,6 +105,30 @@ public class ClienteIT {
         org.assertj.core.api.Assertions.assertThat(responseBody.getTelefone()).isNotNull();
         org.assertj.core.api.Assertions.assertThat(responseBody.getNome()).isEqualTo("Ana Silva");
         org.assertj.core.api.Assertions.assertThat(responseBody.getTelefone()).isEqualTo(11987654321L);
+    }
+
+    @Test
+    public void findByID_SemAutenticacao_Retornar401() {
+        var response = testClient
+                .get()
+                .uri("/cliente-service/clientes/20") // ID de cliente existente
+                .headers(httpHeaders -> httpHeaders.add(HttpHeaders.AUTHORIZATION, null))
+                .exchange();
+
+        response.expectStatus().isUnauthorized();
+
+        org.assertj.core.api.Assertions.assertThat(response.expectBody().returnResult().getResponseBody()).isNull();
+
+        response = testClient
+                .get()
+                .uri("/cliente-service/clientes/20") // ID de cliente existente
+                .headers(httpHeaders -> httpHeaders.add(HttpHeaders.AUTHORIZATION, ""))
+                .exchange();
+
+        response.expectStatus().isUnauthorized();
+
+        org.assertj.core.api.Assertions.assertThat(response.expectBody().returnResult().getResponseBody()).isNull();
+
     }
 
     @Test

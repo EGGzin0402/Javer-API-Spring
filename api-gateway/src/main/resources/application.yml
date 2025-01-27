@@ -30,3 +30,12 @@ spring:
            uri: lb://javer-service
            predicates:
            - Path=/javer-service/**
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    urls:
+      - url: /javer-service/docs
+        name: Javer Service
+      - url: /cliente-service/docs
+        name: Cliente Service
