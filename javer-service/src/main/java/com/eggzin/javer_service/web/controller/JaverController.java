@@ -25,6 +25,7 @@ import com.eggzin.javer_service.util.ScoreUtils;
 import com.eggzin.javer_service.web.dto.ClienteCreateDto;
 import com.eggzin.javer_service.web.dto.ClienteEditDto;
 import com.eggzin.javer_service.web.dto.ClienteResponseDto;
+import com.eggzin.javer_service.web.dto.SaldoDto;
 import com.eggzin.javer_service.web.dto.ScoreResponseDto;
 import com.eggzin.javer_service.web.dto.mapper.ClienteMapper;
 
@@ -168,6 +169,20 @@ public class JaverController {
 		 * 
 		 * return ResponseEntity.noContent().build();
 		 */
+	}
+	
+	@PatchMapping("/{id}/deposito")
+	public ResponseEntity<ClienteResponseDto> deposito(@RequestHeader(value = "Authorization", required = false) String token, @PathVariable Long id, @RequestBody @Valid SaldoDto dto){
+		
+		return proxy.deposito(token, id, dto);
+		
+	}
+	
+	@PatchMapping("/{id}/saque")
+	public ResponseEntity<ClienteResponseDto> saque(@RequestHeader(value = "Authorization", required = false) String token, @PathVariable Long id, @RequestBody @Valid SaldoDto dto){
+		
+		return proxy.saque(token, id, dto);
+		
 	}
 
 	@Operation(

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import com.eggzin.javer_service.web.dto.ClienteCreateDto;
 import com.eggzin.javer_service.web.dto.ClienteEditDto;
 import com.eggzin.javer_service.web.dto.ClienteResponseDto;
+import com.eggzin.javer_service.web.dto.SaldoDto;
 import com.eggzin.javer_service.web.exception.FeignErrorDecoder;
 
 import jakarta.validation.Valid;
@@ -32,4 +33,11 @@ public interface ClienteProxy {
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> delete(@RequestHeader(value = "Authorization", required = false) String token, @PathVariable Long id);
 
+	@PatchMapping("/{id}/deposito")
+	public ResponseEntity<ClienteResponseDto> deposito(@RequestHeader(value = "Authorization", required = false) String token, @PathVariable Long id, @RequestBody @Valid SaldoDto dto);
+	
+	@PatchMapping("/{id}/saque")
+	public ResponseEntity<ClienteResponseDto> saque(@RequestHeader(value = "Authorization", required = false) String token, @PathVariable Long id, @RequestBody @Valid SaldoDto dto);
+	
+	
 }

@@ -56,12 +56,21 @@ public class ClienteIT {
 
     @Test
     public void createCliente_ClienteJaExistente_Retornar409() {
+    	
+    	testClient
+                .post()
+                .uri("/cliente-service/clientes")
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient,"ana@email.com", "123456"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(new ClienteCreateDto("Ana Silva", "11944643410", true))
+                .exchange();
+    	
         ErrorMessage responseBody = testClient
                 .post()
                 .uri("/cliente-service/clientes")
                 .headers(JwtAuthentication.getHeaderAuthorization(testClient,"ana@email.com", "123456"))
                 .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(new ClienteCreateDto("Ana Silva", "11944643410", true)) // Dados inválidos
+                .bodyValue(new ClienteCreateDto("Ana Silva", "11944643410", true))
                 .exchange()
                 .expectStatus().isEqualTo(409)
                 .expectBody(ErrorMessage.class)

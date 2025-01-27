@@ -27,6 +27,7 @@ import com.eggzin.cliente_service.service.UsuarioService;
 import com.eggzin.cliente_service.web.dto.ClienteCreateDto;
 import com.eggzin.cliente_service.web.dto.ClienteEditDto;
 import com.eggzin.cliente_service.web.dto.ClienteResponseDto;
+import com.eggzin.cliente_service.web.dto.SaldoDto;
 import com.eggzin.cliente_service.web.dto.mapper.ClienteMapper;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -165,6 +166,29 @@ public class ClienteController {
 		
 		clienteService.deletar(id);
 		return ResponseEntity.noContent().build();
+	}
+	
+	@Operation(
+			summary = "Depositar na conta do cliente",
+			security = @SecurityRequirement(name = "security"),
+			description = "Adiciona o valor inserido ao saldo do cliente."
+	)
+	@PatchMapping("/{id}/deposito")
+	public ResponseEntity<ClienteResponseDto> deposito(@RequestBody SaldoDto dto, @PathVariable Long id){
+		
+		Cliente cliente = clienteService.depositar(dto.getValor(), id);
+		return ResponseEntity.ok(ClienteMapper.toDto(cliente));
+	}
+	
+	@Operation(
+			summary = "Depositar na conta do cliente",
+			security = @SecurityRequirement(name = "security"),
+			description = "Adiciona o valor inserido ao saldo do cliente."
+	)
+	@PatchMapping("/{id}/saque")
+	public ResponseEntity<ClienteResponseDto> saque(@RequestBody SaldoDto dto, @PathVariable Long id){
+		Cliente cliente = clienteService.sacar(dto.getValor(), id);
+		return ResponseEntity.ok(ClienteMapper.toDto(cliente));
 	}
 
 }

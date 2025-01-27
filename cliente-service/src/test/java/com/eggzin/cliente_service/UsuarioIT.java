@@ -16,7 +16,6 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class UsuarioIT {
 
-
     @Autowired
     WebTestClient testClient;
 

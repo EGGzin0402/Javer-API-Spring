@@ -1,9 +1,11 @@
 package com.eggzin.cliente_service.service;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import com.eggzin.cliente_service.entity.Cliente;
 import com.eggzin.cliente_service.exception.EntityNotFoundException;
+import com.eggzin.cliente_service.exception.UsernameUniqueViolationException;
 import com.eggzin.cliente_service.repository.ClienteRepository;
 
 import jakarta.transaction.Transactional;
@@ -17,8 +19,12 @@ public class ClienteService {
 	
 	@Transactional
 	public Cliente salvar(Cliente cliente) {
-		cliente.setSaldo(0F);
-		return repository.save(cliente);						
+		try {
+			cliente.setSaldo(0F);
+			return repository.save(cliente);									
+		} catch (DataIntegrityViolationException ex) {
+			throw new UsernameUniqueViolationException(String.format("O Usuário '%s' já está cadastrado como cliente", cliente.getUsuario().getUsername()));
+		}
 	}
 	
 	@Transactional
@@ -46,6 +52,20 @@ public class ClienteService {
 	@Transactional
 	public void deletar(Long id) {
 		repository.deleteById(id);
+	}
+	
+	@Transactional
+	public Cliente depositar(String deposito, Long id) {
+		Cliente cliente = buscarPorId(id);
+		cliente.setSaldo(cliente.getSaldo()+Float.parseFloat(deposito));
+		return cliente;
+	}
+	
+	@Transactional
+	public Cliente sacar(String saque, Long id) {
+		Cliente cliente = buscarPorId(id);
+		cliente.setSaldo(cliente.getSaldo()-Float.parseFloat(saque));
+		return cliente;
 	}
 
 }
